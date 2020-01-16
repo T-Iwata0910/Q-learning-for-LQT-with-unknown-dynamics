@@ -31,6 +31,7 @@ classdef DiscreteLQTEnv < rl.env.MATLABEnvironment
     properties
         % Initialize system state [x,dx,theta,dtheta]'
         State;
+        initState;
     end
     
     properties(Access = protected)
@@ -42,7 +43,7 @@ classdef DiscreteLQTEnv < rl.env.MATLABEnvironment
     methods              
         % Contructor method creates an instance of the environment
         % Change class name and constructor name accordingly
-        function this = DiscreteLQTEnv(A, B, C, F, Q, R)
+        function this = DiscreteLQTEnv(A, B, C, F, Q, R, x0)
             
             
             % Initialize Observation settings
@@ -71,6 +72,7 @@ classdef DiscreteLQTEnv < rl.env.MATLABEnvironment
             this.T = blkdiag(A, F);
             this.B1 = [B; zeros(size(F, 1), size(B, 2))];
             this.State = zeros(size(this.T, 1), 1);
+            this.initState = x0;
             
             % Initialize reward function parameter
             C1 = [C -eye(size(C, 1))];
@@ -102,7 +104,7 @@ classdef DiscreteLQTEnv < rl.env.MATLABEnvironment
         
         % Reset environment to initial state and output initial observation
         function InitialObservation = reset(this)
-            InitialObservation = zeros(size(this.State, 1), 1);
+            InitialObservation = this.initState;
             this.State = InitialObservation;
             
             % (optional) use notifyEnvUpdated to signal that the 
